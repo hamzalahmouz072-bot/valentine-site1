@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Date Invite</title>
+
+<style>
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body{
+        background: linear-gradient(135deg, #ffb6c1, #ffd6e8);
+        min-height:100vh;
+        overflow:hidden;
+        color:white;
+    }
+
+    .page{
+        width:100%;
+        height:100vh;
+        display:none;
+        justify-content:center;
+        align-items:center;
+        flex-direction:column;
+        padding:20px;
+        text-align:center;
+    }
+
+    .active{
+        display:flex;
+    }
+
+    h1{
+        font-size:3rem;
+        margin-bottom:40px;
+        text-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    .buttons{
+        position:relative;
+        width:500px;
+        height:250px;
+    }
+
+    button{
+        border:none;
+        padding:15px 35px;
+        border-radius:15px;
+        font-size:1.2rem;
+        cursor:pointer;
+        transition:0.2s;
+    }
+
+    #yesBtn{
+        background:white;
+        color:#ff4f81;
+        font-weight:bold;
+        position:absolute;
+        left:120px;
+        top:100px;
+    }
+
+    #noBtn{
+        background:#ff4f81;
+        color:white;
+        font-weight:bold;
+        position:absolute;
+        left:280px;
+        top:100px;
+    }
+
+    button:hover{
+        transform:scale(1.05);
+    }
+
+    .card{
+        background: rgba(255,255,255,0.15);
+        padding:35px;
+        border-radius:25px;
+        backdrop-filter: blur(10px);
+        width:90%;
+        max-width:700px;
+        box-shadow:0 0 20px rgba(0,0,0,0.15);
+    }
+
+    input[type="date"]{
+        padding:15px;
+        border:none;
+        border-radius:12px;
+        font-size:1rem;
+        margin-top:20px;
+        width:250px;
+    }
+
+    .times{
+        display:grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap:15px;
+        margin-top:30px;
+    }
+
+    .time-btn{
+        background:white;
+        color:#ff4f81;
+    }
+
+    .selected{
+        background:#ff4f81 !important;
+        color:white !important;
+    }
+
+    .meal-grid{
+        display:grid;
+        grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
+        gap:15px;
+        margin-top:25px;
+        max-height:400px;
+        overflow:auto;
+    }
+
+    .meal{
+        background:white;
+        color:#ff4f81;
+        padding:15px;
+        border-radius:15px;
+        cursor:pointer;
+        transition:0.2s;
+        font-weight:bold;
+    }
+
+    .meal:hover{
+        transform:scale(1.05);
+    }
+
+    .next-btn, .confirm-btn{
+        margin-top:30px;
+        background:white;
+        color:#ff4f81;
+        font-weight:bold;
+    }
+
+    .summary{
+        font-size:1.4rem;
+        margin-bottom:25px;
+        line-height:2.2rem;
+    }
+
+    .final-message{
+        font-size:1.5rem;
+        margin-top:20px;
+        line-height:2.5rem;
+    }
+
+    .bottom-text{
+        margin-top:40px;
+        font-size:1.3rem;
+        font-weight:bold;
+    }
+</style>
+</head>
+
+<body>
+
+<!-- PAGE 1 -->
+<div class="page active" id="page1">
+    <h1>Wanna go on a date with me?</h1>
+
+    <div class="buttons" id="buttonArea">
+        <button id="yesBtn">Yes</button>
+        <button id="noBtn">No</button>
+    </div>
+</div>
+
+<!-- PAGE 2 -->
+<div class="page" id="page2">
+    <div class="card">
+        <h1 style="font-size:2.2rem;">When are you free ??</h1>
+
+        <input type="date" id="datePicker">
+
+        <div class="times">
+            <button class="time-btn">10:00 AM</button>
+            <button class="time-btn">12:00 PM</button>
+            <button class="time-btn">2:00 PM</button>
+            <button class="time-btn">4:00 PM</button>
+            <button class="time-btn">6:00 PM</button>
+            <button class="time-btn">8:00 PM</button>
+        </div>
+
+        <button class="confirm-btn" id="confirmBtn">Confirm</button>
+    </div>
+</div>
+
+<!-- PAGE 3 -->
+<div class="page" id="page3">
+    <div class="card">
+        <h1 style="font-size:2.2rem;">Choose your meal 🍽️</h1>
+
+        <div class="meal-grid" id="mealGrid">
+        </div>
+
+        <button class="next-btn" id="nextBtn">Next</button>
+    </div>
+</div>
+
+<!-- PAGE 4 -->
+<div class="page" id="page4">
+    <div class="card">
+        <div class="summary" id="summary"></div>
+
+        <div class="final-message">
+            I'm so excited to see you and spend this special moment together ❤️
+        </div>
+
+        <div class="bottom-text">
+            I can't wait to see you!
+        </div>
+    </div>
+</div>
+
+<script>
+    const noBtn = document.getElementById("noBtn");
+    const area = document.getElementById("buttonArea");
+
+    noBtn.addEventListener("mouseover", () => {
+
+        const areaWidth = area.clientWidth;
+        const areaHeight = area.clientHeight;
+
+        const btnWidth = noBtn.offsetWidth;
+        const btnHeight = noBtn.offsetHeight;
+
+        let randomX;
+        let randomY;
+
+        do{
+            randomX = Math.floor(Math.random() * (areaWidth - btnWidth));
+            randomY = Math.floor(Math.random() * (areaHeight - btnHeight));
+        }
+        while(
+            randomX < 180 &&
+            randomX > 70 &&
+            randomY < 170 &&
+            randomY > 40
+        );
+
+        noBtn.style.left = randomX + "px";
+        noBtn.style.top = randomY + "px";
+    });
+
+    // PAGE SWITCH
+    const yesBtn = document.getElementById("yesBtn");
+    const page1 = document.getElementById("page1");
+    const page2 = document.getElementById("page2");
+    const page3 = document.getElementById("page3");
+    const page4 = document.getElementById("page4");
+
+    yesBtn.onclick = () => {
+        page1.classList.remove("active");
+        page2.classList.add("active");
+    };
+
+    // TIME SELECTION
+    let selectedTime = "";
+    const timeButtons = document.querySelectorAll(".time-btn");
+
+    timeButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+
+            timeButtons.forEach(b => b.classList.remove("selected"));
+
+            btn.classList.add("selected");
+            selectedTime = btn.textContent;
+        });
+    });
+
+    // CONFIRM BUTTON
+    document.getElementById("confirmBtn").onclick = () => {
+
+        const selectedDate = document.getElementById("datePicker").value;
+
+        if(!selectedDate || !selectedTime){
+            alert("Please choose a date and time!");
+            return;
+        }
+
+        page2.classList.remove("active");
+        page3.classList.add("active");
+    };
+
+    // MEALS
+    const meals = [
+        "Pizza",
+        "Burger",
+        "Pasta",
+        "Sushi",
+        "Tacos",
+        "Steak",
+        "Ramen",
+        "Lasagna",
+        "Fried Chicken",
+        "Salad",
+        "Seafood",
+        "BBQ",
+        "Crepes",
+        "Ice Cream",
+        "Chocolate Cake"
+    ];
+
+    const mealGrid = document.getElementById("mealGrid");
+
+    let selectedMeal = "";
+
+    meals.forEach(meal => {
+
+        const div = document.createElement("div");
+        div.classList.add("meal");
+        div.textContent = meal;
+
+        div.addEventListener("click", () => {
+
+            document.querySelectorAll(".meal").forEach(m => {
+                m.classList.remove("selected");
+            });
+
+            div.classList.add("selected");
+
+            selectedMeal = meal;
+        });
+
+        mealGrid.appendChild(div);
+    });
+
+    // FINAL PAGE
+    document.getElementById("nextBtn").onclick = () => {
+
+        if(selectedMeal === ""){
+            alert("Please choose a meal!");
+            return;
+        }
+
+        const date = document.getElementById("datePicker").value;
+
+        document.getElementById("summary").innerHTML = `
+            ❤️ Your Choices ❤️ <br><br>
+            📅 Date: ${date} <br>
+            ⏰ Time: ${selectedTime} <br>
+            🍽️ Meal: ${selectedMeal}
+        `;
+
+        page3.classList.remove("active");
+        page4.classList.add("active");
+    };
+
+</script>
+
+</body>
+</html>
